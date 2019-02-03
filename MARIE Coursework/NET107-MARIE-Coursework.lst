@@ -1,0 +1,278 @@
+     Assembly listing for: NET107-MARIE-Coursework.mas
+                Assembled: Fri May 04 03:16:30 BST 2018
+
+         |                                          / NET107 - Computer Systems and Networking
+         |                                          / Dr. Maria Papdaki
+         |                                          / MARIE Assembly: Performing division and testing if N is a prime number
+         |                                          / By Goel Biju, Abrar Tajwar
+         |                                          
+         |                                          / Overview:
+         |                                          /
+         |                                          / Input and output must be set to Dec.
+         |                                          / When the program is run, the first section of the program provides integer division,
+         |                                          / the two inputs are the dividend and divisor. The program's output will be the quotient
+         |                                          / and remainder as a result of the division.
+         |                                          /
+         |                                          / The second section of the program tests if a given integer input is a prime. The first output
+         |                                          / is an approximate square root (rounded up to the nearest integer if a non-perfect square)
+         |                                          / of the number which we are testing; used as the upper limit when testing by repeated division.
+         |                                          / This optimises the program and ensures no additional instructions are executed to determine if 
+         |                                          / the number is a prime. All subsequent outputs will be results from repeated division i.e. the quotient
+         |                                          / and remainder of divisions of N by 2 until sqrt(N). 
+         |                                          /
+         |                                          / Additionally repeated division will halt as soon an even division occurs indicating a non-prime.
+         |                                          / The final output of the program is of either 1 (indicating prime) or 0 (not a prime - composite).
+         |                                          /
+         |                                          / Subroutines:
+         |                                          /
+         |                                          / 	- Division (performs division by repeated subtraction once dividend and divisor has been set)
+         |                                          /	  Range: dividend > 0, divisor > 0
+         |                                          
+         |                                          /	- ApproxRoot (approximates the root of N, rounding up to the nearest integer)
+         |                                          /	  Range: N > 2
+         |                                          
+         |                                          /	- CheckPrime (utilises the Division subroutine to check if N is a prime number)
+         |                                          /	  Range: N > 2
+         |                                          /
+         |                                          / Reading output:
+         |                                          /
+         |                                          / E.g. If we use the following inputs, dividend = 11 , divisor = 7, N (testPrime) = 9
+         |                                          /      the output generated from the program is as follows:
+         |                                          /
+         |                                          /       1  (quotient from the division)
+         |                                          /       4  (remainder from the division)
+         |                                          /	0  (Is this an even division? 1=True, 0=False)
+         |                                          /	3  (A perfect square root of N, testPrime, if the input was a perfect-square otherwise approximate)
+         |                                          /	2  (N / 2, a divisor of 2)   
+         |                                          /	1  (remainder from N / 2)
+         |                                          /	3  (N / 3, a divisor of 3 - approx. root)
+         |                                          /  	0  (remainder from N / 3)
+         |                                          /	0  (Is N a prime number? 1=Prime number, 0=Composite number)
+         |                                          
+         |                                          
+000 5000 |  userInput      INPUT                    /Allow inputs for the dividend and divisor
+001 2068 |                 STORE dividend            
+002 8800 |                 SKIPCOND 800             /Skip if divisor is positive.
+003 9018 |                 JUMP endProgram           
+         |                                          
+004 5000 |                 INPUT                     
+005 2069 |                 STORE divisor             
+006 8800 |                 SKIPCOND 800             /skip to avoid a divison by zero; check if AC > 0, if so, skip and begin division subroutine
+007 9018 |                 JUMP endProgram           
+         |                                          
+008 0019 |                 JNS Division             /Jump to the Division subroutine with values for division stored
+         |                                          		
+009 106A |                 LOAD quotient            /Output quotient and remainder which has been calculated.
+00A 6000 |                 OUTPUT                    
+00B 106C |                 LOAD remainderMem         
+00C 6000 |                 OUTPUT                    
+         |                                          
+00D 106F |                 LOAD isEvenDivision      /Output the result to state if the division was even (1) or not (0).
+00E 6000 |                 OUTPUT                    
+         |                                          
+         |                                          
+00F 5000 |                 INPUT                     
+010 206D |                 STORE testPrime           
+011 4075 |                 SUBT one                 /If testPrime is greater than 1, then store and continue
+012 8800 |                 SKIPCOND 800             /Skip if AC > 0, showing that number is greater than 2;
+         |                                          						/if the testPrime <= 2 then just output that it is prime
+013 9018 |                 JUMP endProgram           
+         |                                          
+         |                                          
+014 0051 |                 JNS ApproxRoot           /Find an approximate square root of the number we are testing
+         |                                          						/this will shorten the numbers we will have to test to confirm if 
+         |                                          						/the number is a prime or not
+         |                                          
+015 0035 |                 JNS CheckPrime            
+         |                                          		
+016 1070 |                 LOAD isPrime             /Output the isPrime, if it is 1 then testPrime is a prime number, 
+         |                                          						/otherwise a 0 indicates testPrime is not a prime number
+017 6000 |                 OUTPUT                    
+         |                                          
+018 7000 |  endProgram     HALT                      
+         |                                          
+         |                                          
+019 0000 |  Division       HEX 0                    /Store return address to division subroutine
+         |                                          
+01A A000 |                 CLEAR                    /Clear contents of AC and set to 0
+01B 206A |                 STORE quotient           /Store the 0 in AC to quotient to clear quotient
+01C 206B |                 STORE remainder          /Store the 0 again in AC to remainder to clear remainder
+01D 206F |                 STORE isEvenDivision     /Store the 0 into AC to allow a new value for whether the division is even or not
+         |                                          
+01E 1068 |  whileSubt      LOAD dividend            /Load the dividend into the AC
+01F 4069 |                 SUBT divisor             /Subtract the divisor from the dividend	
+         |                                          
+020 8000 |                 SKIPCOND 000             /Skip the next instruction if the AC < 0 - replace with check to see if dividend < divisor, 
+         |                                          						/if so end the while loop or if the dividend is still positive then add one to the quotient
+021 902D |                 JUMP addQuotient          
+         |                                          
+022 2068 |                 STORE dividend           /Store dividend before ending the loop.
+         |                                          
+023 1068 |  endwSubt       LOAD dividend            /Load the dividend 
+         |                                          	
+024 8000 |                 SKIPCOND 000             /Skip the next instruction only if the dividend is negative
+025 9032 |                 JUMP finalise             
+         |                                          
+026 3069 |                 ADD divisor              /AC=current dividend + divisor, gives us our remainder
+027 206B |                 STORE remainder          /Store the result as the remainder of the division		
+         |                                          		
+028 8400 |                 SKIPCOND 400             /AC=remainder, if remainder = 0 then skip
+029 9032 |                 JUMP finalise             
+         |                                          
+02A 1075 |                 LOAD one                 /AC=1, add one to the isEvenDivision.
+02B 206F |                 STORE isEvenDivision      
+02C 9032 |                 JUMP finalise            /Jump to finalise
+         |                                          
+         |                                          
+02D 2068 |  addQuotient    STORE dividend           /Store the value in AC as dividend
+02E 106A |                 LOAD quotient            /Load the quotient from memory
+02F 3075 |                 ADD one                  /AC=quotient+1, represents a successful division
+030 206A |                 STORE quotient           /Store the quotient into memory
+031 901E |                 JUMP whileSubt           /Jump back to the start of the while loop and perform subtraction
+         |                                          
+         |                                          		
+032 106B |  finalise       LOAD remainder           /Load the remainder to output
+033 206C |                 STORE remainderMem       /Store the remainder in a separate memory space before it is cleared 
+         |                                          	
+034 C019 |                 JUMPI Division           /Jump back to top of the subroutine, so it can go back to which 
+         |                                          						/memory location it was initially called from
+         |                                          
+         |                                          
+035 0000 |  CheckPrime     HEX 0                    /Store return address back to where CheckPrime subroutine was invoked from]
+         |                                          
+036 1071 |                 LOAD approxRoot          /AC=approxRoot
+037 3075 |                 ADD one                  /AC=approxRoot + 1; ensure that the range from 2 up to and including the approximate 
+         |                                          						/ 		    root is used in division
+038 2071 |                 STORE approxRoot          
+         |                                          
+039 1071 |  whilePrimeTest LOAD approxRoot          /Go up to and including the approximate square root of the testing prime number we calculated
+03A 406E |                 SUBT nextDivisor          
+         |                                          		
+03B 8800 |                 SKIPCOND 800             /Break out of the while loop when approxRoot = nextDivisor
+03C 9050 |                 JUMP endwPrimeTest        
+         |                                          
+03D 106D |                 LOAD testPrime           /Set the number we are checking for prime as the dividend,
+03E 2068 |                 STORE dividend           /the value of the dividend would change otherwise		
+03F 106E |                 LOAD nextDivisor          
+040 2069 |                 STORE divisor            /Set the next divisor for the upcoming division
+         |                                          
+041 0019 |                 JNS Division             /Invoke the Division subroutine by jumping to it.
+         |                                          
+042 1069 |                 LOAD divisor             /Load and output that was used in the division.		
+043 6000 |                 OUTPUT                    
+044 106C |                 LOAD remainderMem        /Load and output the remainder from the division.
+045 6000 |                 OUTPUT                    
+         |                                          		
+046 106C |  ifNoRem        LOAD remainderMem        /Load the remainder from the last division operation (AC=remainderMem)
+047 8800 |                 SKIPCOND 800             /and test if remainder is greater than 0; AC>0 (loop can continue)
+048 904D |                 JUMP notPrime            /Jump to notPrime if the remainder is zero; there for a composite number
+         |                                          		
+049 106E |                 LOAD nextDivisor         /Load the next divisor again and add one to it 
+04A 3075 |                 ADD one                  /for the next division
+04B 206E |                 STORE nextDivisor         
+         |                                          		
+04C 9039 |                 JUMP whilePrimeTest      /Jump back to the top of the while loop to start a new test
+         |                                          
+04D 1070 |  notPrime       LOAD isPrime              
+04E 4075 |                 SUBT one                 /Subtract one to the isPrime to indicate that the remainder is 0, 
+         |                                          						/so an even division has occured
+04F 2070 |                 STORE isPrime             
+         |                                          
+050 C035 |  endwPrimeTest  JUMPI CheckPrime         /Jump back to top of CheckPrime subroutine so it can return
+         |                                          
+         |                                          
+         |                                          
+051 0000 |  ApproxRoot     HEX 0                    /Store the return address back to where the ApproxRoot subroutine was invoked
+052 106D |  whileRoot      LOAD testPrime           /The number to find the approximate square root of
+053 4074 |                 SUBT rootResult          /Check if the result is equal to greater than the number we are finding the root of
+054 8800 |                 SKIPCOND 800              
+055 9060 |                 JUMP endwRoot            /Jump out of the while loop 
+         |                                          		
+056 1072 |                 LOAD numOdds              
+057 3075 |                 ADD one                  /Add one to the number of odd numbers.
+058 2072 |                 STORE numOdds             
+         |                                          		
+059 1073 |                 LOAD numToAdd             
+05A 3076 |                 ADD two                  /Add two to the next number to add, indicating the next odd number.
+05B 2073 |                 STORE numToAdd            
+         |                                          
+05C 1074 |                 LOAD rootResult           
+05D 3073 |                 ADD numToAdd             /Add the next odd number to the final square root result.
+05E 2074 |                 STORE rootResult          
+         |                                          
+05F 9052 |                 JUMP whileRoot            
+         |                                          
+060 1072 |  endwRoot       LOAD numOdds              
+061 2071 |                 STORE approxRoot          
+062 6000 |                 OUTPUT                    
+         |                                          
+063 1075 |                 LOAD one                 /Set the data variables used to their defaults
+064 2073 |                 STORE numToAdd            
+065 2074 |                 STORE rootResult          
+066 2073 |                 STORE numToAdd            
+         |                                          		
+067 C051 |                 JUMPI ApproxRoot         /Jump back to top of ApproxRoot subroutine	
+         |                                          
+         |                                          
+068 0000 |  dividend       DEC 0                    /dividend=0 (number to divide)
+069 0000 |  divisor        DEC 0                    /divisor=0 (number to divide dividend by)
+06A 0000 |  quotient       DEC 0                    /quotient=0 (result of division)
+06B 0000 |  remainder      DEC 0                    /remainder=0 (remainder of divison if it is not even, otherwise remains zero)
+06C 0000 |  remainderMem   DEC 0                    /remainderMem=0 (keeps a memory of the remainder to use after division) 	
+06D 0003 |  testPrime      DEC 3                    /testPrime=3 (holds the number to test for as being a prime, 
+         |                                          						/             the smallest number you can start with is 3)
+06E 0002 |  nextDivisor    DEC 2                    /nextDivisor=2 (store the next number to divide, range: 2 ... N-1)
+06F 0000 |  isEvenDivision DEC 0                    /isEvenDivision=0 (store if the division was even, 1, or not, 0)
+070 0001 |  isPrime        DEC 1                    /isPrime=1 (can only be either 0 or 1, assigned as 0 when remainderMem = 0, 
+         |                                          						/           indicating an even division, therefore not a prime)
+         |                                          
+071 0000 |  approxRoot     DEC 0                    /approxRoot=0 (holds the approximate root of the number tested rounded to the nearest integer)
+072 0001 |  numOdds        DEC 1                    /numOdds=1 (holds the number of odd numbers added together to provide the square root result)
+073 0001 |  numToAdd       DEC 1                    /numToAdd=1 (stores the next number to add to the final square root result)
+074 0001 |  rootResult     DEC 1                    /rootResult=1 (the final square root result used to compare to see if we have counted up or
+         |                                          						/  	       over the square root result)
+         |                                          
+075 0001 |  one            DEC 1                    /one=1 (used to increment values)
+076 0002 |  two            DEC 2                    /two=2 (used to compare numbers to 1st prime number)
+         |                                          
+
+Assembly successful.
+
+         SYMBOL TABLE
+         ----------------------------------------------------------
+          Symbol         | Defined | References 
+         ----------------+---------+-------------------------------
+          ApproxRoot     |   051   | 014, 067
+          CheckPrime     |   035   | 015, 050
+          Division       |   019   | 008, 034, 041
+          addQuotient    |   02D   | 021
+          approxRoot     |   071   | 036, 038, 039, 061
+          dividend       |   068   | 001, 01E, 022, 023, 02D, 03E
+          divisor        |   069   | 005, 01F, 026, 040, 042
+          endProgram     |   018   | 003, 007, 013
+          endwPrimeTest  |   050   | 03C
+          endwRoot       |   060   | 055
+          endwSubt       |   023   | 
+          finalise       |   032   | 025, 029, 02C
+          ifNoRem        |   046   | 
+          isEvenDivision |   06F   | 00D, 01D, 02B
+          isPrime        |   070   | 016, 04D, 04F
+          nextDivisor    |   06E   | 03A, 03F, 049, 04B
+          notPrime       |   04D   | 048
+          numOdds        |   072   | 056, 058, 060
+          numToAdd       |   073   | 059, 05B, 05D, 064, 066
+          one            |   075   | 011, 02A, 02F, 037, 04A, 04E, 
+                         |         | 057, 063
+          quotient       |   06A   | 009, 01B, 02E, 030
+          remainder      |   06B   | 01C, 027, 032
+          remainderMem   |   06C   | 00B, 033, 044, 046
+          rootResult     |   074   | 053, 05C, 05E, 065
+          testPrime      |   06D   | 010, 03D, 052
+          two            |   076   | 05A
+          userInput      |   000   | 
+          whilePrimeTest |   039   | 04C
+          whileRoot      |   052   | 05F
+          whileSubt      |   01E   | 031
+         ----------------------------------------------------------
+
+

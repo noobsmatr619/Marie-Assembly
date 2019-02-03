@@ -1,0 +1,34 @@
+ -------------------------
+ Symbol         | Location
+ ---------------+---------
+ ApproxRoot     |   051
+ CheckPrime     |   035
+ Division       |   019
+ addQuotient    |   02D
+ approxRoot     |   071
+ dividend       |   068
+ divisor        |   069
+ endProgram     |   018
+ endwPrimeTest  |   050
+ endwRoot       |   060
+ endwSubt       |   023
+ finalise       |   032
+ ifNoRem        |   046
+ isEvenDivision |   06F
+ isPrime        |   070
+ nextDivisor    |   06E
+ notPrime       |   04D
+ numOdds        |   072
+ numToAdd       |   073
+ one            |   075
+ quotient       |   06A
+ remainder      |   06B
+ remainderMem   |   06C
+ rootResult     |   074
+ testPrime      |   06D
+ two            |   076
+ userInput      |   000
+ whilePrimeTest |   039
+ whileRoot      |   052
+ whileSubt      |   01E
+
